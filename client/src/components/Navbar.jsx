@@ -45,7 +45,7 @@ const Navbar = () => {
                 height: '100%'
             }}>
                 <Link to="/" className="text-gradient-logo">
-                    Community Gatherings
+                    Community Gatherings!
                 </Link>
 
                 <div style={{ display: 'flex', gap: '2.5rem', alignItems: 'center' }}>
