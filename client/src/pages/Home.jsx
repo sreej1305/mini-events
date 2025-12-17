@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import EventCard from '../components/EventCard';
 import QuoteBanner from '../components/QuoteBanner';
-import { mockEvents } from '../api/mockEvents';
+import { mockEvents, communityEvents } from '../api/mockEvents';
 import { EventCardSkeleton } from '../components/Skeleton';
 import { useToast } from '../context/ToastContext';
 
@@ -101,8 +101,8 @@ const Home = () => {
                     </div>
                 ) : (
                     <div className="grid-responsive">
-                        {/* Fallback to mock events if no real events are found, to keep section looking premium */}
-                        {(filteredEvents.length > 0 ? filteredEvents : mockEvents).map((event, index) => (
+                        {/* Fallback to distinct community mock events if no real events are found */}
+                        {(filteredEvents.length > 0 ? filteredEvents : communityEvents).map((event, index) => (
                             <div key={event._id} style={{ animation: `slideUp 0.6s ease-out ${index * 0.1}s forwards`, opacity: 0 }}>
                                 <EventCard
                                     event={{ ...event, isMock: filteredEvents.length === 0 }} // Treat as mock if using fallback

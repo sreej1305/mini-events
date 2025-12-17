@@ -39,3 +39,45 @@ export const mockEvents = [
         category: "Workshop"
     }
 ];
+
+export const communityEvents = [
+    {
+        _id: 'mock-4',
+        title: "Sunset Yoga Flow",
+        description: "Unwind with nature. A gentle flow session at the park during golden hour.",
+        date: new Date(Date.now() + 86400000 * 12).toISOString(),
+        location: "Central Park",
+        capacity: 30,
+        filledSpots: 25,
+        imageUrl: "https://images.unsplash.com/photo-1544367563-1215555ff474?w=800&q=80",
+        organizer: { name: "Yoga Collective" },
+        attendees: [],
+        category: "Wellness"
+    },
+    {
+        _id: 'mock-5',
+        title: "Indie Game Showcase",
+        description: "Play upcoming indie titles and meet the developers in a casual setting.",
+        date: new Date(Date.now() + 86400000 * 15).toISOString(),
+        location: "Arcade Bar",
+        capacity: 150,
+        filledSpots: 45,
+        imageUrl: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=800&q=80",
+        organizer: { name: "Game Devs" },
+        attendees: [],
+        category: "Gaming"
+    },
+    {
+        _id: 'mock-6',
+        title: "Digital Art Gallery",
+        description: "VR experience featuring local artists. Headsets provided.",
+        date: new Date(Date.now() + 86400000 * 20).toISOString(),
+        location: "Tech Hub",
+        capacity: 60,
+        filledSpots: 10,
+        imageUrl: "https://images.unsplash.com/photo-1550645612-83f5d594b671?w=800&q=80",
+        organizer: { name: "Art Tech" },
+        attendees: [],
+        category: "Art"
+    }
+];
