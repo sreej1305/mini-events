@@ -13,12 +13,19 @@ const Home = () => {
     const { addToast } = useToast();
 
     const fetchEvents = async () => {
+        // Fallback timer: if API takes > 2s (Render cold start), stop loading to show Mock Data
+        const timeoutId = setTimeout(() => {
+            setLoading(false);
+            // Optional: Toast to say "Showing demo mode" could be added here
+        }, 2000);
+
         try {
             const { data } = await api.get('/events');
+            clearTimeout(timeoutId); // If success, clear timer
             setEvents(data);
         } catch (error) {
             console.error('Failed to fetch events', error);
-            addToast('Failed to load events', 'error');
+            // Don't show error toast on first load to keep UI clean, just fallback
         } finally {
             setLoading(false);
         }
