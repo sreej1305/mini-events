@@ -92,15 +92,15 @@ const Home = () => {
                         <EventCardSkeleton />
                         <EventCardSkeleton />
                     </div>
-                ) : filteredEvents.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--text-muted)' }}>
-                        <p style={{ fontSize: '1.25rem', fontFamily: 'Cormorant Garamond', fontStyle: 'italic' }}>No gatherings found in the wilderness.</p>
-                    </div>
                 ) : (
                     <div className="grid-responsive">
-                        {filteredEvents.map((event, index) => (
+                        {/* Fallback to mock events if no real events are found, to keep section looking premium */}
+                        {(filteredEvents.length > 0 ? filteredEvents : mockEvents).map((event, index) => (
                             <div key={event._id} style={{ animation: `slideUp 0.6s ease-out ${index * 0.1}s forwards`, opacity: 0 }}>
-                                <EventCard event={event} refreshEvents={fetchEvents} />
+                                <EventCard
+                                    event={{ ...event, isMock: filteredEvents.length === 0 }} // Treat as mock if using fallback
+                                    refreshEvents={fetchEvents}
+                                />
                             </div>
                         ))}
                     </div>

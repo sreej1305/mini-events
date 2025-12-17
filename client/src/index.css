@@ -266,3 +266,59 @@ footer {
     font-size: 2rem !important;
   }
 }
+
+/* Event Card Premium Styles */
+.event-card-premium {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  background: white;
+}
+
+.event-card-premium:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.1), 0 10px 20px -5px rgba(0, 0, 0, 0.05);
+  border-color: var(--secondary);
+}
+
+.card-image-zoom {
+  transform-origin: center;
+}
+
+.event-card-premium:hover .card-image-zoom {
+  transform: scale(1.08);
+}
+
+/* Enhancements for tags */
+.badge-trending {
+  background: linear-gradient(135deg, var(--text), var(--text-muted));
+  color: #fff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Ensure progress bar transition is smooth */
+.progress-bar-fill {
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Button overrides for card */
+.event-card-premium .btn {
+  transition: all 0.2s ease;
+}
+
+.event-card-premium .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(164, 191, 163, 0.3);
+}
+
+/* Soft Divider Gradient */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+  opacity: 0.3;
+  margin: 4rem auto;
+  width: 80%;
+}

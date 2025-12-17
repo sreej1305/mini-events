@@ -5,22 +5,20 @@ import { useState } from 'react';
 const EventCard = ({ event, refreshEvents }) => {
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
-
-    // Safety check for user ID to prevent crashes if user object is malformed
     const [localRsvped, setLocalRsvped] = useState(false);
 
-    // Safety check for user ID to prevent crashes if user object is malformed
     const userId = user?.id || user?._id;
-    const isRsvped = event.isMock ? localRsvped : (userId && event.attendees.includes(userId));
+    const isRsvped = event.isMock ? localRsvped : (userId && event.attendees?.includes(userId));
     const isFull = event.filledSpots >= event.capacity;
-    const isOwner = userId && event.organizer._id === userId;
+    const isOwner = userId && event.organizer?._id === userId;
+    const spotsLeft = event.capacity - event.filledSpots;
+    const percentFull = Math.min(100, (event.filledSpots / event.capacity) * 100);
 
     const handleRsvp = async () => {
         if (!user) return alert('Please login to RSVP');
 
         if (event.isMock) {
             setLocalRsvped(!localRsvped);
-            alert(localRsvped ? 'RSVP Cancelled (Demo)' : 'RSVP Successful (Demo)');
             return;
         }
 
@@ -50,77 +48,102 @@ const EventCard = ({ event, refreshEvents }) => {
     };
 
     return (
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-            <div style={{ position: 'relative', height: '200px' }}>
-                {event.imageUrl ? (
-                    <img
-                        src={event.imageUrl}
-                        alt={event.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                ) : (
-                    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(to bottom right, var(--surface), var(--background))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: '3rem', opacity: 0.2 }}>✨</span>
-                    </div>
-                )}
+        <div className="card event-card-premium" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', position: 'relative' }}>
+            {/* Image Section */}
+            <div style={{ position: 'relative', height: '220px', overflow: 'hidden' }}>
+                <img
+                    src={event.imageUrl || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80'}
+                    alt={event.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
+                    className="card-image-zoom"
+                />
+                <div style={{
+                    position: 'absolute',
+                    top: '12px',
+                    left: '12px',
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    color: 'var(--text)',
+                    padding: '4px 12px',
+                    borderRadius: '20px',
+                    fontSize: '0.75rem',
+                    fontWeight: '600',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                }}>
+                    {event.category || 'Gathering'}
+                </div>
                 {isRsvped && (
                     <div style={{
-                        position: 'absolute', top: '10px', right: '10px',
-                        background: 'var(--secondary)', color: 'white',
-                        padding: '0.25rem 0.75rem', borderRadius: '2rem',
-                        fontSize: '0.75rem', fontWeight: 'bold', boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                        position: 'absolute', bottom: '12px', right: '12px',
+                        background: 'var(--success, #10b981)', color: 'white',
+                        padding: '4px 10px', borderRadius: '8px',
+                        fontSize: '0.75rem', fontWeight: 'bold',
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.2)'
                     }}>
                         Attending
                     </div>
                 )}
             </div>
 
-            <div style={{ padding: '1.5rem', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                <h3 style={{ marginBottom: '0.5rem', fontSize: '1.4rem' }}>{event.title}</h3>
+            {/* Content Section */}
+            <div style={{ padding: '1.5rem', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <h3 style={{ fontSize: '1.35rem', lineHeight: 1.2, margin: 0 }}>{event.title}</h3>
+                </div>
 
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span>📅 {new Date(event.date).toLocaleDateString()}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                    <span>📅 {new Date(event.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                    <span>•</span>
                     <span>📍 {event.location}</span>
                 </div>
 
-                <p style={{ marginBottom: '1.5rem', fontSize: '0.95rem', color: 'var(--text)', lineHeight: 1.6, flexGrow: 1 }}>
-                    {event.description.substring(0, 100)}{event.description.length > 100 ? '...' : ''}
+                <p style={{ fontSize: '0.95rem', color: 'var(--text)', opacity: 0.8, lineHeight: 1.6, flexGrow: 1, margin: 0 }}>
+                    {event.description?.substring(0, 90)}{event.description?.length > 90 ? '...' : ''}
                 </p>
 
-                <div style={{ marginTop: 'auto', borderTop: '1px solid var(--glass-border)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '0.85rem' }}>
-                        <span style={{ color: isFull ? 'var(--accent)' : 'var(--text-muted)' }}>
-                            {event.filledSpots}/{event.capacity} <span style={{ opacity: 0.7 }}>Spots</span>
-                        </span>
+                {/* Availability & Actions */}
+                <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ marginBottom: '1rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '6px', fontWeight: 500 }}>
+                            <span>Availability</span>
+                            <span style={{ color: spotsLeft < 10 ? '#ef4444' : 'var(--primary-dark)' }}>
+                                {isFull ? 'Sold Out' : `${spotsLeft} spots left`}
+                            </span>
+                        </div>
+                        <div style={{ width: '100%', height: '6px', background: 'rgba(0,0,0,0.05)', borderRadius: '3px', overflow: 'hidden' }}>
+                            <div style={{
+                                width: `${percentFull}%`,
+                                height: '100%',
+                                background: isFull ? 'var(--text-muted)' : 'var(--primary)',
+                                borderRadius: '3px',
+                                transition: 'width 0.5s ease-out'
+                            }}></div>
+                        </div>
                     </div>
 
                     <div style={{ display: 'flex', gap: '0.75rem' }}>
-                        {user && !isOwner && (
+                        {user && !isOwner ? (
                             <button
                                 onClick={handleRsvp}
                                 disabled={loading || (isFull && !isRsvped)}
-                                className={isRsvped ? 'btn btn-secondary' : 'btn'}
+                                className={isRsvped ? 'btn btn-secondary' : 'btn btn-primary'}
                                 style={{
-                                    padding: '0.4rem 1.25rem',
-                                    opacity: (isFull && !isRsvped) ? 0.6 : 1,
-                                    fontSize: '0.85rem'
+                                    width: '100%',
+                                    padding: '0.7rem',
+                                    fontWeight: 600,
+                                    opacity: (isFull && !isRsvped) ? 0.7 : 1
                                 }}
                             >
-                                {loading ? '...' : isRsvped ? 'Cancel RSVP' : isFull ? 'Sold Out' : 'Join Event'}
+                                {loading ? 'Processing...' : isRsvped ? 'Cancel RSVP' : isFull ? 'Waitlist' : 'Join Event'}
                             </button>
-                        )}
-                        {isOwner && (
-                            <button
-                                onClick={handleDelete}
-                                className="btn btn-danger"
-                                style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', borderColor: '#ef4444', color: '#ef4444' }}
-                            >
-                                Delete
+                        ) : isOwner ? (
+                            <button onClick={handleDelete} className="btn btn-secondary" style={{ width: '100%', borderColor: '#ef4444', color: '#ef4444' }}>
+                                Cancel Event
                             </button>
-                        )}
-                        {!user && (
-                            <a href="/login" className="btn btn-secondary" style={{ fontSize: '0.75rem', padding: '0.3rem 1rem' }}>
-                                Login to Join
+                        ) : (
+                            <a href="/login" className="btn btn-primary" style={{ width: '100%', textAlign: 'center' }}>
+                                Log in to Join
                             </a>
                         )}
                     </div>
